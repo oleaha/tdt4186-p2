@@ -7,6 +7,8 @@ public class Doorman implements Runnable {
 	private CustomerQueue queue;
 	private Gui gui;
 	private Thread thread;
+
+    private int pos;
 	/**
 	 * Creates a new doorman.
 	 * @param queue		The customer queue.
@@ -16,8 +18,10 @@ public class Doorman implements Runnable {
 		this.queue = queue;
 		this.gui = gui;
 		this.thread = new Thread(this, "Doorman");
-
+        this.pos = 0;
 		this.gui.println("Doorman created!");
+
+
 	}
 
 	public void run() {
@@ -28,13 +32,26 @@ public class Doorman implements Runnable {
 		}
 	}
 
+    /**
+     * Try to add new customer to queue
+     */
+
 	private void addCustomer() {
 		this.gui.println("Try to add new customer to queue");
+
 		Customer cust = new Customer();
-		this.queue.enqueue(cust);
+		this.queue.enqueue(cust, this.pos % 18);
+
 		this.gui.println("Customer #" + Integer.toString(cust.getCustomerID()) + " added to queue");
-		this.gui.fillLoungeChair(this.queue.getNumberOfCustomersInQueue() - 1, cust);
+
+		this.gui.fillLoungeChair(this.pos % 18, cust);
+        this.pos++;
 	}
+
+    /**
+     * Make doorman sleep a constant time
+     * TODO: Make doorman sleep a random time
+     */
 
     private void doormanSleep() {
         try {
@@ -59,8 +76,4 @@ public class Doorman implements Runnable {
 	public void stopThread() {
 		// Incomplete
 	}
-
-
-
-	// Add more methods as needed
 }

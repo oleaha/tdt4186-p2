@@ -1,7 +1,4 @@
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * This class implements a queue of customers as a circular buffer.
@@ -11,7 +8,9 @@ public class CustomerQueue {
 	private int queueLength;
 	private Gui gui;
     private LinkedList<Customer> customers;
-    private int headOfQueue;
+    private LinkedList<Integer> seatPosition;
+    private Customer lastCustomer;
+    //private int seatPosition;
 
 
 	/**
@@ -23,6 +22,8 @@ public class CustomerQueue {
 		this.queueLength = queueLength;
 		this.gui = gui;
         this.customers = new LinkedList<>();
+        this.seatPosition = new LinkedList<>();
+        this.lastCustomer = null;
 	}
 
 	/**
@@ -30,12 +31,12 @@ public class CustomerQueue {
  	 * @param customer
      * @retur The position of the customer in the queue
 	 */
-	public synchronized void enqueue(Customer customer) {
+	public synchronized void enqueue(Customer customer, int pos) {
 
         while(true) {
-
-            if(this.customers.size() < Globals.NOF_CHAIRS) {
+            if(this.customers.size() < this.queueLength) {
                 this.customers.add(customer);
+                this.seatPosition.add(pos);
                 return;
             } else {
                 try {
@@ -43,20 +44,25 @@ public class CustomerQueue {
                 } catch (InterruptedException e) {
                     System.out.println("Error");
                 }
-
             }
         }
 	}
 
-    public int getNumberOfCustomersInQueue() {
-        return this.customers.size();
-    }
-
 	/**
 	 * Remove customer from queue
-	 * @param customer
 	 */
-	public synchronized void dequeue(Customer customer) {
-
+	public synchronized int dequeue() {
+        if(this.customers.size() > 0) {
+            this.lastCustomer = this.customers.poll();
+            int pos = this.seatPosition.poll();
+            notifyAll();
+            return pos;
+        }
+        return -1;
 	}
+
+    public Customer getLastCustomer() {
+        return this.lastCustomer;
+    }
+
 }

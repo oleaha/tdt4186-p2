@@ -40,8 +40,49 @@ public class Barber implements Runnable {
 
     public void run() {
 
+        while(true) {
+            int pos = this.queue.dequeue();
+            Customer cust = this.queue.getLastCustomer();
+
+
+            if(pos >= 0) {
+                this.gui.println("Remove customer from chair");
+
+                this.gui.emptyLoungeChair(pos);
+
+                this.gui.fillBarberChair(this.pos, cust);
+
+            }
+
+            try {
+                int random_work = Globals.MIN_BARBER_WORK + (int)(Math.random()*(Globals.MAX_BARBER_WORK-Globals.MIN_BARBER_WORK +1));
+                int random_sleep = Globals.MIN_BARBER_SLEEP + (int)(Math.random()*(Globals.MAX_BARBER_SLEEP-Globals.MIN_BARBER_SLEEP +1));
+
+                this.gui.barberIsAwake(this.pos);
+                Thread.sleep(random_work);
+
+                this.gui.emptyBarberChair(this.pos);
+
+                this.gui.barberIsSleeping(this.pos);
+                Thread.sleep(random_sleep);
+
+            } catch (InterruptedException e) {
+
+            }
+
+
+        }
     }
 
-	// Add more methods as needed
+        /**
+         * 1: Check queue
+         * 2: Remove customer from queue and into barber chair
+         * 3: Barber works for a time
+         * 4: Barber is done with customer, remove customer from chair
+         * 5: Barber daydreams
+         */
+
 }
+
+
 
