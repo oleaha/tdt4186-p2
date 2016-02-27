@@ -55,7 +55,12 @@ public class CustomerQueue {
         if(this.customers.size() > 0) {
             this.lastCustomer = this.customers.poll();
             int pos = this.seatPosition.poll();
-            notifyAll();
+
+            // Only notify when queue is full
+            if(this.customers.size() + 1 == this.queueLength) {
+                notifyAll();
+            }
+
             return pos;
         }
         return -1;
